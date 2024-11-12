@@ -2,7 +2,8 @@ name: cd
 
 on:
   push:
-    branches: [master]
+    # FIXME update to master once verified
+    branches: [gcloud]
 
 jobs:
   deploy:
@@ -18,5 +19,13 @@ jobs:
         with:
           go-version: "1.23.0"
 
-      - name: Build image
+      - name: Build notely
         run: scripts/buildprod.sh
+
+      - name: Setup Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          version: '>=363.0.0'
+
+      - name: Build and push Docker image to Artifact Registry
+        run: gcloud builds submit --tag us-east1-docker.pkg.dev/notely-441419/notely-ar-repo/IMAGE:TAG .
