@@ -2,8 +2,7 @@ name: cd
 
 on:
   push:
-    # FIXME update to master once verified
-    branches: [gcloud]
+    branches: [master]
 
 jobs:
   deploy:
