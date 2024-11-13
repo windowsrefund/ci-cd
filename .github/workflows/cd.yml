@@ -32,4 +32,14 @@ jobs:
           version: '>=363.0.0'
 
       - name: Build and push Docker image to Artifact Registry
+        # FIXME we should increment TAG programatically (also applies to next step)
         run: gcloud builds submit --tag us-east1-docker.pkg.dev/notely-441419/notely-ar-repo/notely:1 .
+
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy notely \
+          --image us-east1-docker.pkg.dev/notely-441419/notely-ar-repo/notely:1 \
+          --region us-east-1 \
+          --allow-unauthenticated \
+          --project notely-441419 \
+          --max-instances 4

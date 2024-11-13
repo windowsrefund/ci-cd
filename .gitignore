@@ -1,5 +1,6 @@
 out
 .env
 .gp.md
+.tool-versions
 learn-cicd-starter
 notely
