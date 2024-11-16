@@ -9,6 +9,9 @@ jobs:
     name: Deploy
     runs-on: ubuntu-latest
 
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
     steps:
       - name: Check out code
         uses: actions/checkout@v4
@@ -18,7 +21,10 @@ jobs:
         with:
           go-version: "1.23.0"
 
-      - name: Build notely
+      - name: Install goose for database migration
+        run: go install github.com/pressly/goose/v3/cmd/goose@ubuntu-latest
+
+      - name: Build notely binary
         run: scripts/buildprod.sh
 
       - name: Auth
@@ -31,11 +37,14 @@ jobs:
         with:
           version: '>=363.0.0'
 
-      - name: Build and push Docker image to Artifact Registry
+      - name: Build and push notely Docker image to Artifact Registry
         # FIXME we should increment TAG programatically (also applies to next step)
         run: gcloud builds submit --tag us-east1-docker.pkg.dev/notely-441419/notely-ar-repo/notely:1 .
 
-      - name: Deploy to Cloud Run
+      - name: Migrate database
+        run: scripts/migratep.sh
+
+      - name: Deploy notely image to Cloud Run
         run: |
           gcloud run deploy notely \
           --image us-east1-docker.pkg.dev/notely-441419/notely-ar-repo/notely:1 \
