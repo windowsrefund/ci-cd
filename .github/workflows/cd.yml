@@ -42,7 +42,7 @@ jobs:
         run: gcloud builds submit --tag us-east1-docker.pkg.dev/notely-441419/notely-ar-repo/notely:1 .
 
       - name: Migrate database
-        run: scripts/migratep.sh
+        run: scripts/migrateup.sh
 
       - name: Deploy notely image to Cloud Run
         run: |
